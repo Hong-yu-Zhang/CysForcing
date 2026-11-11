@@ -1,0 +1,11 @@
+DATA:
+  SPLIT_DIR: 'data/splits'
+  FEAT_ROOT: 'data/features_esmc300m/train'
+
+SOLVER:
+  BATCH_SIZE: 32
+  MAX_EPOCH: 10
+
+OUTPUT:
+  DIR: './result'
+  RUN_NAME: 'CysForcing_esmc300m'

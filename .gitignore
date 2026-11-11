@@ -1,0 +1,25 @@
+__pycache__/
+*.pyc
+
+# Datasets live on Zenodo and are downloaded into data/ (see data/README.md).
+# Keep only the pointer README under version control.
+data/splits/
+data/ood/
+data/ciaa/
+data/raw/
+
+# Feature cache, built locally by scripts/build_features.py
+data/features*
+
+# External model weights + foldseek binary, downloaded by the user
+# (see README "Installation")
+SaProt_650M_AF2/
+
+# Run outputs
+result_inference/
+result/
+reproduce/out/
+paper/out/
+
+# Internal review guide: carries cluster paths, not for the public repo
+INSTRUCT.md
