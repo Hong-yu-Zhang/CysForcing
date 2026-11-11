@@ -1,8 +1,9 @@
 <p align="center">
-  <img src="assets/banner.png" width="100%" alt="CysForcing: ratio-prior multimodal alignment for generalizable cysteine reactivity prediction">
+  <img src="docs/static/banner.png" width="100%" alt="CysForcing: ratio-prior multimodal alignment for generalizable cysteine reactivity prediction">
 </p>
 
 <p align="center">
+  <a href="https://hong-yu-zhang.github.io/CysForcing/"><img alt="project page" src="https://img.shields.io/badge/project-page-26c6da?style=flat-square"></a>
   <a href="https://doi.org/10.5281/zenodo.XXXXXXX"><img alt="data" src="https://img.shields.io/badge/data-Zenodo-0e7490?style=flat-square"></a>
   <a href="#demo"><img alt="demo" src="https://img.shields.io/badge/demo-2%20min%20video-0891b2?style=flat-square"></a>
   <img alt="python" src="https://img.shields.io/badge/python-3.10-155e75?style=flat-square">
@@ -20,7 +21,7 @@ Hongyu Zhang, Feng Zhang, Fengzhang Wang, Zihua Liu, Yudi Guo, Zhiwei Nie\*, Chu
 
 CysForcing predicts which cysteines of a protein are reactive from its sequence and AlphaFold2 structure. Two small adapters map frozen ESM-2 and SaProt embeddings into one space and align them residue by residue; measured isoTOP-ABPP competition ratios then act as a prior on that space, so that sites of similar reactivity sit close together. Only 1.9M parameters are trained.
 
-<p align="center"><img src="assets/method.png" width="100%" alt="CysForcing architecture"></p>
+<p align="center"><img src="docs/static/method.png" width="100%" alt="CysForcing architecture"></p>
 
 ## Results
 
@@ -37,8 +38,8 @@ Baselines are five protein foundation models (ESM-2 650M/3B/15B, SaProt 650M/1B)
 ## Demo
 
 <p align="center">
-  <a href="assets/demo.mp4"><img src="assets/demo_poster.jpg" width="70%" alt="Two-minute video walkthrough of the results"></a><br>
-  <sub>Two-minute walkthrough of the results (click to play)</sub>
+  <a href="https://hong-yu-zhang.github.io/CysForcing/#demo"><img src="docs/static/demo_poster.jpg" width="70%" alt="Two-minute video walkthrough of the results"></a><br>
+  <sub>Two-minute walkthrough of the results (plays on the <a href="https://hong-yu-zhang.github.io/CysForcing/">project page</a>)</sub>
 </p>
 
 ## Getting started

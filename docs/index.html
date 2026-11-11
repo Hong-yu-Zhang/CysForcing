@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CysForcing · Ratio-prior Multimodal Alignment for Generalizable Cysteine Reactivity Prediction</title>
+<meta name="description" content="CysForcing predicts reactive cysteines from sequence and AlphaFold2 structure, using measured isoTOP-ABPP ratios as a prior on the representation space.">
+<meta property="og:title" content="CysForcing">
+<meta property="og:description" content="Ratio-prior multimodal alignment for generalizable cysteine reactivity prediction.">
+<meta property="og:image" content="static/banner.png">
+<meta name="theme-color" content="#06182a">
+<link rel="icon" href="static/favicon.png">
+<link rel="stylesheet" href="style.css">
+<script>document.documentElement.classList.add("js")</script>
+</head>
+<body>
+<div class="topline" aria-hidden="true"></div>
+<div class="progress" aria-hidden="true"><span id="progress"></span></div>
+
+<header class="hero">
+  <div class="hero-text reveal">
+    <p class="kicker">Cysteine reactivity · chemoproteomics · protein foundation models</p>
+    <h1 class="title">CysForcing</h1>
+    <p class="subtitle">Ratio-prior Multimodal Alignment for Generalizable Cysteine Reactivity Prediction</p>
+    <p class="authors">Hongyu Zhang<sup>1</sup>, Feng Zhang<sup>1</sup>, Fengzhang Wang<sup>1</sup>, Zihua Liu<sup>1</sup>, Yudi Guo<sup>1</sup>, Zhiwei Nie<sup>2*</sup>, Chu Wang<sup>1*</sup>, Jie Chen<sup>3,4*</sup>, Yuan Liu<sup>1*</sup></p>
+    <p class="affils"><sup>1</sup>Peking University · <sup>2</sup>Fudan University · <sup>3</sup>Harbin Institute of Technology, Shenzhen · <sup>4</sup>Pengcheng Laboratory · <sup>*</sup>corresponding authors</p>
+    <nav class="pills" aria-label="Links">
+      <span class="pill is-soon" title="Coming soon">Paper</span>
+      <a class="pill" href="https://github.com/Hong-yu-Zhang/CysForcing">Code</a>
+      <a class="pill" href="https://doi.org/10.5281/zenodo.XXXXXXX">Data</a>
+      <a class="pill" href="#demo">Video</a>
+    </nav>
+  </div>
+  <figure class="hero-protein">
+    <video autoplay muted loop playsinline preload="auto" poster="static/hero.jpg"
+           aria-label="Rotating surface of GSTO1 with its hyper-reactive Cys32 lit">
+      <source src="static/hero.mp4" type="video/mp4">
+    </video>
+    <figcaption><b>GSTO1 Cys32</b><span>isoTOP-ABPP ratio 1.53 · hyper-reactive</span></figcaption>
+  </figure>
+</header>
+
+<section class="stats reveal" aria-label="Key numbers">
+  <div><b>8,739</b><span>measured cysteines</span></div>
+  <div><b>5,302</b><span>proteins</span></div>
+  <div><b>~100</b><span>isoTOP-ABPP studies</span></div>
+  <div><b>1.9M</b><span>trainable parameters</span></div>
+</section>
+
+<main>
+  <section id="demo" class="block">
+    <h2 class="shead"><span>Demo</span><em>Two-minute walkthrough</em></h2>
+    <div class="screen reveal">
+      <video controls preload="metadata" poster="static/demo_poster.jpg">
+        <source src="static/demo.mp4" type="video/mp4">
+      </video>
+    </div>
+  </section>
+
+  <section id="abstract" class="block">
+    <h2 class="shead"><span>Abstract</span></h2>
+    <div class="panel prose reveal">
+      <p>Cysteine reactivity underlies diverse protein functions and covalent druggability, and can now be measured at proteome scale by chemical proteomics. Despite this progress, comprehensive discovery of functional cysteines remains challenging: mass spectrometry captures only a fraction of sites, and predictive models trained on limited observations generalize poorly to low-homology proteins or unseen species. To overcome this bottleneck, we introduce CysForcing, a multimodal learning framework that leverages both sequence and structure to extrapolate sparse omics data into proteome-wide predictions. By embedding experimental ratio signals as a learning prior, CysForcing organizes the representation space by reactivity-relevant similarity rather than incidental sequence patterns, improving out-of-distribution robustness and cross-species transfer. Across homology-controlled out-of-distribution splits, CysForcing consistently outperforms strong sequence-only and structure-only foundation baselines, with the largest gains in the lowest-similarity regimes, and transfers zero-shot to entirely unseen eukaryotic and prokaryotic proteomes. These results suggest that integrating experimental priors with multimodal representation learning enables scalable and generalizable mapping of cysteine reactivity.</p>
+    </div>
+  </section>
+
+  <section id="method" class="block">
+    <h2 class="shead"><span>Method</span><em>At a glance</em></h2>
+    <div class="paper-fig reveal"><img src="static/method.png" alt="CysForcing architecture: frozen SaProt and ESM-2 encoders, adapters, residue alignment and ratio-prior alignment, decoder" loading="lazy"></div>
+    <div class="steps">
+      <div class="panel step reveal"><b>01</b><h3>Two frozen encoders</h3><p>SaProt reads the AlphaFold2 structure and ESM-2 the sequence; two small adapters map both views into one space.</p></div>
+      <div class="panel step reveal"><b>02</b><h3>Residue alignment</h3><p>A cross-modal contrastive loss pulls the two views of the same cysteine together and pushes other sites apart.</p></div>
+      <div class="panel step reveal"><b>03</b><h3>Ratio-prior alignment</h3><p>Measured competition ratios order the shared space, so that sites of similar reactivity sit close together.</p></div>
+    </div>
+  </section>
+
+  <section id="results" class="block">
+    <h2 class="shead"><span>Results</span><em>Benchmark against foundation models</em></h2>
+    <div class="screen tabs reveal" data-auto="4200">
+      <img class="on" src="static/fig_bench_bacc.webp" alt="Balanced accuracy of six models at 100, 80, 60 and 40 percent similarity">
+      <img src="static/fig_bench_mcc.webp" alt="MCC of six models at four similarity cutoffs">
+      <img src="static/fig_bench_f1.webp" alt="F1 of six models at four similarity cutoffs">
+      <img src="static/fig_bench_recall.webp" alt="Recall of six models at four similarity cutoffs">
+      <button style="left:25.02%;width:10.54%;top:2.09%;height:5.75%" aria-label="Show balanced accuracy"></button>
+      <button style="left:36.08%;width:5.23%;top:2.09%;height:5.75%" aria-label="Show MCC"></button>
+      <button style="left:41.83%;width:3.85%;top:2.09%;height:5.75%" aria-label="Show F1"></button>
+      <button style="left:46.20%;width:5.87%;top:2.09%;height:5.75%" aria-label="Show recall"></button>
+    </div>
+    <p class="caption reveal">Five protein foundation models at four sequence-similarity cutoffs: the largest gains are in F1 and recall, and they are widest at 40% similarity.</p>
+
+    <h2 class="shead"><span>Results</span><em>Ablation at 40% similarity</em></h2>
+    <div class="screen tabs reveal" data-auto="4200">
+      <img class="on" src="static/fig_abl_steps_bacc.webp" alt="Ablation, balanced accuracy">
+      <img src="static/fig_abl_steps_mcc.webp" alt="Ablation, MCC">
+      <img src="static/fig_abl_steps_f1.webp" alt="Ablation, F1">
+      <img src="static/fig_abl_steps_recall.webp" alt="Ablation, recall">
+      <button style="left:24.50%;width:10.54%;top:2.13%;height:5.87%" aria-label="Show balanced accuracy"></button>
+      <button style="left:35.56%;width:5.23%;top:2.13%;height:5.87%" aria-label="Show MCC"></button>
+      <button style="left:41.30%;width:3.85%;top:2.13%;height:5.87%" aria-label="Show F1"></button>
+      <button style="left:45.68%;width:5.87%;top:2.13%;height:5.87%" aria-label="Show recall"></button>
+    </div>
+    <p class="caption reveal">Fusing sequence and structure already beats either one alone; ratio-prior alignment adds +0.07 F1 and +0.14 recall, the largest single step.</p>
+
+    <h2 class="shead"><span>Results</span><em>Representation space</em></h2>
+    <div class="screen reveal"><img src="static/fig_latent.webp" alt="Schematic latent spaces of naive fusion and CysForcing coloured by reactivity ratio, with the ratio-ordering score" loading="lazy"></div>
+    <p class="caption reveal">Neighbouring sites share similar measured ratios: the ratio-ordering score ρ rises from 0.30 with naive fusion to 0.45 with CysForcing, while shuffled ratios give ρ ≈ 0.</p>
+
+    <h2 class="shead"><span>Generalization</span><em>Zero-shot against released predictors</em></h2>
+    <div class="screen reveal"><img src="static/fig_zs_radar.webp" alt="Radar plots of AUROC, AUPRC, MCC and balanced accuracy for CysForcing, CIAA RF, HyperCys and sbPCR on three zero-shot sets" loading="lazy"></div>
+    <p class="caption reveal">On mouse, Salmonella SL1344 and CIAA's AlphaFold2 benchmark, CysForcing leads every metric on every set, by +0.15 to +0.28 AUROC over the best released predictor.</p>
+
+    <h2 class="shead"><span>Generalization</span><em>Where homology cannot help</em></h2>
+    <div class="screen reveal"><img src="static/fig_zs_homology.webp" alt="AUROC of homology transfer and CysForcing on sites with and without a measured homolog" loading="lazy"></div>
+    <p class="caption reveal">Homology transfer copies the ratio of an aligned, measured training cysteine; for the 69–84% of sites without one it falls to chance, while CysForcing keeps AUROC 0.68–0.83.</p>
+
+    <h2 class="shead"><span>Summary</span></h2>
+    <div class="cards">
+      <div class="panel card reveal"><b data-to="0.20" data-dec="2" data-pre="+">+0.20</b><div><h3>Recall vs. best baseline</h3><p>at 40% sequence similarity</p></div></div>
+      <div class="panel card reveal"><b data-to="2" data-dec="0" data-post="×">2×</b><div><h3>Recall vs. ESM2-15B</h3><p>1.3B vs. 15B parameters, 40% similarity</p></div></div>
+      <div class="panel card reveal"><b data-to="0.28" data-dec="2" data-pre="+">+0.28</b><div><h3>Zero-shot AUROC lead</h3><p>over released predictors, on mouse</p></div></div>
+      <div class="panel card reveal"><b data-to="0.83" data-dec="2">0.83</b><div><h3>No measured homolog</h3><p>mouse AUROC; homology transfer 0.51</p></div></div>
+    </div>
+  </section>
+
+  <section id="code" class="block">
+    <h2 class="shead"><span>Code &amp; data</span></h2>
+    <div class="links">
+      <a class="panel link reveal" href="https://github.com/Hong-yu-Zhang/CysForcing"><b>GitHub</b><span>Training, inference, released weights and one script per paper figure</span></a>
+      <a class="panel link reveal" href="https://doi.org/10.5281/zenodo.XXXXXXX"><b>Zenodo</b><span>Curated isoTOP-ABPP splits and the two zero-shot evaluation sets</span></a>
+    </div>
+    <pre class="code reveal"><code>git clone https://github.com/Hong-yu-Zhang/CysForcing.git &amp;&amp; cd CysForcing
+python simple_inference.py --model configs/model/CysForcing.yaml --weight weights/CysForcing.pth \
+    --pdb_folder /path/to/pdbs --out_dir result_inference/mine</code></pre>
+  </section>
+
+  <section id="citation" class="block">
+    <h2 class="shead"><span>Citation</span></h2>
+    <div class="bib reveal">
+      <button class="copy" type="button" data-copy="#bibtex">Copy</button>
+<pre id="bibtex">@article{zhang2026cysforcing,
+  title   = {Ratio-prior Multimodal Alignment for Generalizable Cysteine Reactivity Prediction},
+  author  = {Zhang, Hongyu and Zhang, Feng and Wang, Fengzhang and Liu, Zihua and Guo, Yudi and
+             Nie, Zhiwei and Wang, Chu and Chen, Jie and Liu, Yuan},
+  journal = {Under review},
+  year    = {2026}
+}</pre>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>CysForcing · MIT License</span>
+  <span>Protein surface: AlphaFold DB model of GSTO1 (P78417), CC BY 4.0</span>
+</footer>
+
+<script src="main.js"></script>
+</body>
+</html>

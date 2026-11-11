@@ -25,8 +25,8 @@ external executable and is not linked into this code.
 backbone sensitivity analysis (`reproduce/run_backbone.sh`); obtain them from
 <https://github.com/evolutionaryscale/esm> under their licence terms.
 
-**AlphaFold DB structures** (CC BY 4.0) — fetched by `scripts/get_AF2.py`. The banner, video demo
-and poster in `assets/` render the AlphaFold DB model of GSTO1 (UniProt P78417).
+**AlphaFold DB structures** (CC BY 4.0) — fetched by `scripts/get_AF2.py`. The project page and the
+images and video in `docs/static/` render the AlphaFold DB model of GSTO1 (UniProt P78417).
 
 ## Data distributed via Zenodo
 
