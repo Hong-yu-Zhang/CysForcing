@@ -85,17 +85,8 @@ a { color: var(--accent-hi); }
 .pill:hover { background: rgba(38, 198, 218, .18); box-shadow: 0 0 22px rgba(38, 198, 218, .35); transform: translateY(-1px); }
 .pill.is-soon { opacity: .45; border-style: dashed; cursor: default; }
 .pill.is-soon:hover { background: rgba(7, 37, 41, .85); box-shadow: none; transform: none; }
-.hero-protein { position: relative; margin: 0; aspect-ratio: 1; }
-.hero-protein video {   /* rendered on black; screen blending drops the black into the page */
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  mix-blend-mode: screen;
-  -webkit-mask-image: radial-gradient(closest-side, #000 82%, transparent 100%);
-  mask-image: radial-gradient(closest-side, #000 82%, transparent 100%);
-}
-.hero-protein figcaption { position: absolute; right: 2%; bottom: 12%; text-align: right; color: var(--gray); font-size: 13px; }
-.hero-protein figcaption b { display: block; color: var(--white); font-size: 15px; }
+.hero-protein { margin: 0; }
+.hero-protein img { display: block; width: 100%; height: auto; }
 
 .stats {
   position: relative;

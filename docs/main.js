@@ -64,6 +64,4 @@
     }
     setTimeout(() => { b.textContent = "Copy"; b.classList.remove("done"); }, 1800);
   }));
-
-  if (reduce) document.querySelectorAll("video[autoplay]").forEach((v) => v.pause());
 })();

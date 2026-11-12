@@ -32,11 +32,11 @@
     </nav>
   </div>
   <figure class="hero-protein">
-    <video autoplay muted loop playsinline preload="auto" poster="static/hero.jpg"
-           aria-label="Rotating surface of GSTO1 with its hyper-reactive Cys32 lit">
-      <source src="static/hero.mp4" type="video/mp4">
-    </video>
-    <figcaption><b>GSTO1 Cys32</b><span>isoTOP-ABPP ratio 1.53 · hyper-reactive</span></figcaption>
+    <picture>
+      <source srcset="static/hero_still.png" media="(prefers-reduced-motion: reduce)">
+      <img src="static/hero.webp" width="600" height="600"
+           alt="Rotating AlphaFold2 protein surface whose cysteine sites light up one after another">
+    </picture>
   </figure>
 </header>
 
