@@ -13,7 +13,7 @@ data/
 
 ## Download
 
-Get the archive from Zenodo (DOI: 10.5281/zenodo.XXXXXXX). It expands to a
+Get the data archive from Zenodo (DOI: 10.5281/zenodo.XXXXXXX). It expands to a
 single `CysForcing-data-v1.0/` folder; copy its `data/` payload in next to
 `main.py`:
 
@@ -26,13 +26,25 @@ Each subfolder ships its own `README.md` documenting the columns and labelling;
 `SHA256SUMS` in the archive lets you verify integrity
 (`cd CysForcing-data-v1.0 && sha256sum -c SHA256SUMS`).
 
-## Not included
+## Structures and features
 
-Protein **structures** are AlphaFold2 models fetched on demand from the
-AlphaFold Protein Structure Database by `scripts/get_AF2.py` and the
-`reproduce/*.sh` scripts, keyed by the accessions above; they are not part of
-the Zenodo archive. The **feature cache** (`data/features/`) is built locally by
-`scripts/build_features.py`. Both are git-ignored.
+Protein **structures** (AlphaFold2 models, PDB) are provided as a companion
+archive, `CysForcing-structures-v1.0.zip`, in the same Zenodo record (8,444
+files keyed by the accessions above). Unpack each subfolder where the code
+expects it:
+
+```bash
+unzip CysForcing-structures-v1.0.zip
+cp -r CysForcing-structures-v1.0/splits/* data/raw/AF2_pdb/
+cp -r CysForcing-structures-v1.0/ood/*    data/ood/af2_pdb/
+cp -r CysForcing-structures-v1.0/ciaa/*   data/ciaa/af2_denovo/
+```
+
+Alternatively `scripts/get_AF2.py` and the `reproduce/*.sh` scripts fetch the
+structures on demand from the AlphaFold DB (which is versioned, so a model
+released after ours may differ slightly). The **feature cache**
+(`data/features/`) is built locally by `scripts/build_features.py`. Both the
+unpacked structures and the feature cache are git-ignored.
 
 ## Figures
 
