@@ -30,8 +30,8 @@ CysForcing predicts which cysteines of a protein are reactive from its sequence 
 | Held-out proteins, ≤40% identity to training | F1 | 0.439 (ESM2-3B) | **0.542** | +0.103 |
 | Zero-shot, *M. musculus* (606 sites) | AUROC | 0.596 (sbPCR) | **0.872** | +0.276 |
 | Zero-shot, *S. typhimurium* SL1344 (317 sites) | AUROC | 0.593 (CIAA RF) | **0.761** | +0.168 |
-| Zero-shot, CIAA AF2-denovo (476 sites) | AUROC | 0.572 (sbPCR) | **0.724** | +0.152 |
-| Zero-shot sites with no measured homolog (69–84%) | AUROC | ≈0.50 (homology transfer) | **0.68–0.83** | +0.18 to +0.33 |
+| Zero-shot, CIAA AF2-denovo (256 sites) | AUROC | 0.555 (CIAA RF) | **0.674** | +0.119 |
+| Zero-shot sites with no measured homolog (69–98%) | AUROC | ≈0.50 (homology transfer) | **0.67–0.83** | +0.17 to +0.33 |
 
 Baselines are five protein foundation models (ESM-2 650M/3B/15B, SaProt 650M/1B) on the held-out split, and the released predictors CIAA, HyperCys and sbPCR on the zero-shot sets, scored on the same sites and structures with sites labelled hyper-reactive at ratio ≤ 2.3 and low-reactive at ≥ 10. The paper reports every similarity cutoff, the ablations and the significance tests; `bash paper/run_all.sh` regenerates all of them.
 

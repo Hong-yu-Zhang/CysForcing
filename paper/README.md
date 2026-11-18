@@ -38,8 +38,11 @@ draws the figure from its tables.
 
 Labelling follows the hyper-reactivity convention of the three compared
 predictors: `ratio <= 2.3` is hyper-reactive, `ratio >= 10` low-reactive. This
-gives 606 Mouse, 317 SL1344 and 476 CIAA sites. Probability-valued methods are
-thresholded at 0.5; sbPCR uses its own predicted label.
+gives 606 Mouse, 317 SL1344 and 476 CIAA sites. For CIAA, the 220 sites on
+proteins that also appear in the training split are excluded to avoid train/test
+leakage (`on_training` column; Methods), leaving 256 leakage-free CIAA sites;
+Mouse and SL1344 are unseen species and need no such filter. Probability-valued
+methods are thresholded at 0.5; sbPCR uses its own predicted label.
 
 `ood_sites.tsv` has one row per cysteine scored by all four methods:
 
@@ -48,6 +51,7 @@ thresholded at 0.5; sbPCR uses its own predicted label.
 | `set` | `Mouse`, `SL1344` or `CIAA` |
 | `uniprot`, `pos0` | protein accession and 0-indexed cysteine position |
 | `ratio` | measured isoTOP-ABPP competition ratio |
+| `on_training` | CIAA only: the protein also appears in the training split, so the site is excluded from Fig. 4 to avoid train/test leakage |
 | `transferable` | the site's best DIAMOND hit in the training set aligns it to a measured training cysteine |
 | `transferred_ratio` | that training cysteine's measured ratio (empty when not transferable) |
 | `cysforcing` | CysForcing P(reactive), released weights |

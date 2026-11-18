@@ -232,6 +232,11 @@ def summary(radar, homology, boot):
 def main():
     args = parse_args()
     sites = pd.read_csv(args.sites, sep="\t")
+    # CIAA sites whose protein also appears in the training split are excluded to
+    # avoid train/test leakage (Methods); the flag is precomputed in ood_sites.tsv.
+    if "on_training" in sites.columns:
+        leaked = sites["on_training"].astype(str).str.lower().isin(("true", "1"))
+        sites = sites[~leaked].reset_index(drop=True)
     if args.cysforcing_ood or args.cysforcing_ciaa:
         sites = override_cysforcing(sites, args.cysforcing_ood, args.cysforcing_ciaa)
     lab = label(sites)
