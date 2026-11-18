@@ -40,9 +40,10 @@ CC BY 4.0, with the exception noted below.
 Backus Lab at UCLA), redistributed under that licence (not CC BY 4.0) so that
 `reproduce/run_ciaa.sh` runs without a manual download.
 
-**isoTOP-ABPP reactivity ratios** (`data/splits/*.csv`, `data/ood/*.tsv`) are
-compiled from published chemoproteomic datasets; see the manuscript Methods for
-the source studies.
+**isoTOP-ABPP reactivity ratios** — `data/splits/*.csv` are compiled from ~100
+in-house isoTOP-ABPP experiments (IA-alkyne, 1:10); `data/ood/*.tsv` (Mouse and
+Salmonella SL1344) are re-processed from publicly available isoTOP-ABPP
+measurements through the same pipeline. See the manuscript Methods for details.
 
 ## Baseline predictors compared against in Fig. 4
 
