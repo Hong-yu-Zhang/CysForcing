@@ -13,7 +13,7 @@ data/
 
 ## Download
 
-Get the data archive from Zenodo (DOI: 10.5281/zenodo.XXXXXXX). It expands to a
+Get the data archive from Zenodo (DOI: 10.5281/zenodo.24350021). It expands to a
 single `CysForcing-data-v1.0/` folder; copy its `data/` payload in next to
 `main.py`:
 

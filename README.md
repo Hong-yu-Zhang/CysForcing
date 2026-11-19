@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://hong-yu-zhang.github.io/CysForcing/"><img alt="project page" src="https://img.shields.io/badge/project-page-26c6da?style=flat-square"></a>
-  <a href="https://doi.org/10.5281/zenodo.XXXXXXX"><img alt="data" src="https://img.shields.io/badge/data-Zenodo-0e7490?style=flat-square"></a>
+  <a href="https://doi.org/10.5281/zenodo.24350021"><img alt="data" src="https://img.shields.io/badge/data-Zenodo-0e7490?style=flat-square"></a>
   <a href="#demo"><img alt="demo" src="https://img.shields.io/badge/demo-2%20min%20video-0891b2?style=flat-square"></a>
   <img alt="python" src="https://img.shields.io/badge/python-3.10-155e75?style=flat-square">
   <img alt="pytorch" src="https://img.shields.io/badge/pytorch-1.12-155e75?style=flat-square">
@@ -61,7 +61,7 @@ python simple_inference.py --model configs/model/CysForcing.yaml --weight weight
     --pdb_folder /path/to/pdbs --out_dir result_inference/mine
 ```
 
-**Data.** The training and evaluation sets are on [Zenodo](https://doi.org/10.5281/zenodo.XXXXXXX) ([format](data/README.md)); structures come from AlphaFold DB:
+**Data.** The training and evaluation sets are on [Zenodo](https://doi.org/10.5281/zenodo.24350021) ([format](data/README.md)); structures come from AlphaFold DB:
 
 ```bash
 unzip CysForcing-data-v1.0.zip && cp -r CysForcing-data-v1.0/data/* data/
