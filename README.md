@@ -14,14 +14,14 @@
   <b>Paper</b> <sub>(soon)</sub> &nbsp;·&nbsp;
   <a href="https://doi.org/10.5281/zenodo.24350021"><b>Data</b></a> &nbsp;·&nbsp;
   <a href="#demo"><b>Video</b></a> &nbsp;·&nbsp;
-  <a href="#web-interface"><b>Web interface</b></a>
+  <a href="https://hong-yu-zhang.github.io/CysForcing/predict/"><b>Web interface</b></a>
 </p>
 
 <p align="center">
   <a href="https://hong-yu-zhang.github.io/CysForcing/"><img alt="project page" src="https://img.shields.io/badge/project-page-26c6da?style=flat-square"></a>
   <a href="https://doi.org/10.5281/zenodo.24350021"><img alt="data" src="https://img.shields.io/badge/data-Zenodo-0e7490?style=flat-square"></a>
   <a href="#demo"><img alt="demo" src="https://img.shields.io/badge/demo-2%20min%20video-0891b2?style=flat-square"></a>
-  <a href="#web-interface"><img alt="web interface" src="https://img.shields.io/badge/web-interface-0891b2?style=flat-square"></a>
+  <a href="https://hong-yu-zhang.github.io/CysForcing/predict/"><img alt="web interface" src="https://img.shields.io/badge/web-interface-0891b2?style=flat-square"></a>
   <img alt="python" src="https://img.shields.io/badge/python-3.10-155e75?style=flat-square">
   <img alt="pytorch" src="https://img.shields.io/badge/pytorch-1.12-155e75?style=flat-square">
   <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-334155?style=flat-square"></a>
@@ -67,11 +67,13 @@ Baselines are five protein foundation models (ESM-2 650M/3B/15B, SaProt 650M/1B)
 
 `webapp/` serves CysForcing in the browser from one GPU. Give a UniProt accession, for which the server fetches the AlphaFold DB model, or upload a PDB file: every cysteine is scored, shown along the sequence and on the structure, and can be downloaded as the same `result.json` that `simple_inference.py` writes. It needs nothing beyond the requirements below.
 
+The page itself is [`docs/predict/`](docs/predict/), and the project site hosts it at [hong-yu-zhang.github.io/CysForcing/predict](https://hong-yu-zhang.github.io/CysForcing/predict/). Until a public server is attached there, it shows the four examples, precomputed with the released model.
+
 ```bash
 python webapp/server.py --gpu 0 --port 7860    # then open http://localhost:7860
 ```
 
-The models load once; each protein then takes a fraction of a second on the GPU, plus the AlphaFold DB download. `POST /api/predict` with `{"uniprot": "P78417"}` or `{"pdb": "<file text>"}` returns the scores as JSON, and `--host 0.0.0.0` serves other machines.
+The models load once; each protein then takes a fraction of a second on the GPU, plus the AlphaFold DB download. `POST /api/predict` with `{"uniprot": "P78417"}` or `{"pdb": "<file text>"}` returns the scores as JSON, and `--host 0.0.0.0` serves other machines. To attach a server to the hosted page, serve it over HTTPS, start it with `--allow-origin https://hong-yu-zhang.github.io`, and put its URL in the `cysforcing-api` meta tag of `docs/predict/index.html`.
 
 <p align="center"><img src="docs/static/webapp.webp" width="100%" alt="The web interface: per-cysteine probabilities of GSTO1 along the sequence, on the AlphaFold2 structure and in a table"></p>
 

@@ -27,7 +27,7 @@ body {
   background: #000 radial-gradient(130% 85% at 50% 0%, #0c2438 0%, var(--stage) 28%, #04101c 55%, #000 85%) fixed;
   -webkit-font-smoothing: antialiased;
 }
-body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; background: url(grain.png); opacity: .35; }
+body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; background: url(../static/grain.png); opacity: .35; }
 a { color: var(--accent-hi); text-underline-offset: 3px; }
 button, input { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--accent-hi); outline-offset: 3px; }
@@ -48,6 +48,7 @@ code { font: 500 .9em var(--f-mono); color: #cfe9ee; }
 .status i { width: 8px; height: 8px; border-radius: 50%; background: var(--gray-d); }
 .status.ok i { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
 .status.down i { background: var(--bad); }
+.status.demo i { background: transparent; box-shadow: inset 0 0 0 1.5px var(--accent); }
 
 /* ---------------------------------------------------------------- input */
 main { position: relative; z-index: 1; max-width: var(--maxw); margin: 0 auto; padding: 0 32px 80px; }
@@ -59,6 +60,8 @@ main { position: relative; z-index: 1; max-width: var(--maxw); margin: 0 auto; p
 
 .panel { position: relative; border: 1px solid var(--line); border-top-color: var(--line-hi); border-radius: 16px; background: linear-gradient(180deg, var(--panel-top), var(--panel-bot)); box-shadow: 0 22px 44px rgba(0, 0, 0, .55); }
 .input { padding: 22px 26px 24px; }
+.notice { margin: 0 0 20px; padding: 12px 16px 12px 18px; border-left: 3px solid var(--accent); border-radius: 8px; background: rgba(38, 198, 218, .08); color: #c9ced4; font-size: 15px; line-height: 1.55; }
+.notice b { color: var(--white); font-weight: 600; }
 
 .seg { position: relative; display: inline-flex; gap: 2px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: rgba(4, 12, 22, .72); }
 .seg button { position: relative; z-index: 1; display: inline-flex; align-items: baseline; gap: 7px; padding: 8px 18px; border: 0; border-radius: 999px; background: none; color: var(--gray); font: 600 14.5px/1.2 var(--f-body); cursor: pointer; transition: color .22s ease; }

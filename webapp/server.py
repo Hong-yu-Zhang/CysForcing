@@ -3,7 +3,8 @@
 
     python webapp/server.py --gpu 0 --port 7860 --saprot /path/to/SaProt_650M_AF2
 
-then open http://localhost:7860. POST /api/predict takes JSON, either {"uniprot": "P78417"}, for which the
+then open http://localhost:7860. The page is docs/predict/, the same one GitHub Pages hosts; served from
+here it talks to this server. POST /api/predict takes JSON, either {"uniprot": "P78417"}, for which the
 AlphaFold DB model is fetched, or {"pdb": "<PDB file text>", "name": "x.pdb"}; it returns one probability per
 cysteine, computed exactly as simple_inference.py does. Only the standard library is used on top of the
 packages CysForcing already needs.
@@ -37,6 +38,8 @@ def parse_args():
                    help="folder holding SaProt_650M_AF2/ and bin/foldseek")
     p.add_argument("--cache", default=os.path.join(tempfile.gettempdir(), "cysforcing_web"),
                    help="scratch folder for uploads and fetched AlphaFold DB models")
+    p.add_argument("--allow-origin", action="append", default=[], metavar="ORIGIN",
+                   help="a site whose copy of the page may call this server, e.g. https://hong-yu-zhang.github.io")
     return p.parse_args()
 
 
@@ -60,13 +63,25 @@ THRESHOLD = 0.5                # the operating point of the paper
 MAX_BODY = 12 * 1024 * 1024
 UNIPROT = re.compile(r"^(?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})$")
 AFDB_API = "https://alphafold.ebi.ac.uk/api/prediction/{}"
-STATIC = {
-    "/": (os.path.join(HERE, "static", "index.html"), "text/html; charset=utf-8"),
-    "/app.css": (os.path.join(HERE, "static", "app.css"), "text/css; charset=utf-8"),
-    "/app.js": (os.path.join(HERE, "static", "app.js"), "application/javascript; charset=utf-8"),
-    "/favicon.png": (os.path.join(ROOT, "docs", "static", "favicon.png"), "image/png"),
-    "/grain.png": (os.path.join(ROOT, "docs", "static", "grain.png"), "image/png"),
-}
+DOCS = os.path.realpath(os.path.join(ROOT, "docs"))
+SERVED = ("predict", "static")   # the subfolders of docs/ the page needs
+TYPES = {".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8",
+         ".js": "application/javascript; charset=utf-8", ".json": "application/json; charset=utf-8",
+         ".png": "image/png", ".webp": "image/webp", ".jpg": "image/jpeg"}
+
+
+def static_file(route):
+    """(path, content type) of a page file under docs/predict/ or docs/static/, else None."""
+    rel = urllib.parse.unquote(route).lstrip("/")
+    if "\0" in rel:
+        return None
+    if rel.endswith("/"):
+        rel += "index.html"
+    path = os.path.realpath(os.path.join(DOCS, rel))
+    if os.path.relpath(path, DOCS).split(os.sep)[0] not in SERVED or not os.path.isfile(path):
+        return None
+    ctype = TYPES.get(os.path.splitext(path)[1].lower())
+    return (path, ctype) if ctype else None
 
 
 class InputError(Exception):
@@ -238,10 +253,17 @@ def run(payload):
 class Handler(BaseHTTPRequestHandler):
     server_version = "CysForcing"
 
+    def _cors(self):
+        origin = self.headers.get("Origin")
+        if origin and origin in ARGS.allow_origin:
+            self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Vary", "Origin")
+
     def _send(self, code, body, ctype="application/json; charset=utf-8"):
         if isinstance(body, (dict, list)):
             body = json.dumps(body).encode()
         self.send_response(code)
+        self._cors()
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
@@ -254,11 +276,26 @@ class Handler(BaseHTTPRequestHandler):
         if route == "/api/health":
             return self._send(200, {"ok": True, "device": PREDICTOR.device, "waiting": PREDICTOR.waiting,
                                     "max_residues": MAX_RES, "threshold": THRESHOLD})
-        if route in STATIC:
-            path, ctype = STATIC[route]
-            with open(path, "rb") as f:
-                return self._send(200, f.read(), ctype)
+        if route in ("/", "/predict"):
+            self.send_response(302)
+            self.send_header("Location", "/predict/")
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return
+        hit = static_file(route)
+        if hit:
+            with open(hit[0], "rb") as f:
+                return self._send(200, f.read(), hit[1])
         self._send(404, {"error": "not found"})
+
+    def do_OPTIONS(self):      # the preflight a browser sends before a cross-site POST
+        self.send_response(204)
+        self._cors()
+        self.send_header("Access-Control-Allow-Methods", "GET, POST")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Max-Age", "86400")
+        self.send_header("Content-Length", "0")
+        self.end_headers()
 
     def do_POST(self):
         if urllib.parse.urlparse(self.path).path != "/api/predict":

@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CysForcing · Predict reactive cysteines</title>
 <meta name="theme-color" content="#06182a">
-<link rel="icon" href="favicon.png">
+<!-- URL of a CysForcing server (webapp/server.py). Empty: the server this page came from; without one, the page shows the precomputed examples only. -->
+<meta name="cysforcing-api" content="">
+<link rel="icon" href="../static/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,wght@0,400..700;1,400..700&family=Google+Sans+Code:wght@400..600&display=swap">
@@ -25,12 +27,13 @@
 
 <main>
   <header class="intro">
-    <p class="kicker">Web inference · one GPU</p>
+    <p class="kicker">Web inference</p>
     <h1>Predict reactive cysteines</h1>
     <p class="lede">Give a UniProt accession or an AlphaFold2 model. CysForcing reads the sequence with ESM-2 and the structure with SaProt, and scores every cysteine.</p>
   </header>
 
   <section class="panel input" aria-label="Input">
+    <p class="notice" id="notice" hidden><b>Examples only.</b> The online server is not running yet, so this page shows the four examples, precomputed with the released model. To score any protein, run the web interface on your own machine; see the <a href="https://github.com/Hong-yu-Zhang/CysForcing#web-interface">README</a>.</p>
     <div class="seg" id="mode" role="tablist">
       <span class="seg-thumb" aria-hidden="true"></span>
       <button type="button" role="tab" data-mode="uniprot" aria-selected="true"><b>1</b>UniProt ID</button>

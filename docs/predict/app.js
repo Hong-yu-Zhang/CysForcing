@@ -15,15 +15,21 @@
   };
 
   // ---------------------------------------------------------------- server status
-  let device = "GPU";
+  // The server is the URL in <meta name="cysforcing-api">, or else the one that served this page
+  // (webapp/server.py answers at /api/, next to /predict/). Without a server, only the examples are shown.
+  const API = ($('meta[name="cysforcing-api"]').content.trim().replace(/\/+$/, "") || "..") + "/api/";
+  const EXAMPLES = new Set([...document.querySelectorAll("[data-acc]")].map((b) => b.dataset.acc));
+  let device = "GPU", live = false;
   const status = $("#status");
-  fetch("api/health").then((r) => r.json()).then((h) => {
+  const health = fetch(API + "health").then((r) => (r.ok ? r.json() : Promise.reject())).then((h) => {
+    live = true;
     device = h.device;
     status.classList.add("ok");
     status.lastElementChild.textContent = "Ready";
   }).catch(() => {
-    status.classList.add("down");
-    status.lastElementChild.textContent = "Server offline";
+    status.classList.add("demo");
+    status.lastElementChild.textContent = "Examples only";
+    $("#notice").hidden = false;
   });
 
   // ---------------------------------------------------------------- input mode, with the sliding pill of the project page
@@ -78,14 +84,20 @@
   $("#form").addEventListener("submit", async (e) => {
     e.preventDefault();
     hideError();
+    await health;
     let body, pdbText = null;
     if (mode === "uniprot") {
       const a = acc.value.trim().toUpperCase();
       if (!a) return showError("Type a UniProt accession, or pick an example.");
+      if (!live) {
+        if (EXAMPLES.has(a)) return showExample(a);
+        return showError(`The online server is not running yet, so only the four examples can be shown. To score ${a.slice(0, 20)}, run the web interface on your own machine (see the README).`);
+      }
       body = { uniprot: a };
       $("#busy-msg").textContent = "Fetching the AlphaFold DB model and scoring on the " + device;
     } else {
       if (!upload) return showError("Choose a PDB file first.");
+      if (!live) return showError("The online server is not running yet, so uploads cannot be scored here. Run the web interface on your own machine (see the README).");
       body = { pdb: upload.text, name: upload.name };
       pdbText = upload.text;
       $("#busy-msg").textContent = "Scoring on the " + device;
@@ -95,7 +107,7 @@
     const t0 = performance.now();
     const tick = setInterval(() => { clock.textContent = ((performance.now() - t0) / 1000).toFixed(1) + " s"; }, 100);
     try {
-      const r = await fetch("api/predict", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      const r = await fetch(API + "predict", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       const res = await r.json().catch(() => ({ error: "The server sent an unreadable reply (HTTP " + r.status + ")." }));
       if (!r.ok || res.error) throw new Error(res.error || "HTTP " + r.status);
       busy.hidden = true;        // before the scroll to the results, or they shift up under the bar as it closes
@@ -108,6 +120,17 @@
       busy.hidden = true;
     }
   });
+
+  async function showExample(a) {
+    try {
+      const r = await fetch("examples/" + a + ".json");
+      if (!r.ok) throw new Error();
+      const res = await r.json();
+      render(res, res.pdb);
+    } catch {
+      showError("The precomputed example could not be loaded.");
+    }
+  }
 
   // ---------------------------------------------------------------- results
   let current = null, sortKey = "prob", selected = null;
@@ -132,8 +155,8 @@
     $("#f-len").nextElementSibling.textContent = res.length > res.scored_length ? "residues · first " + fmt(res.scored_length) + " scored" : "residues";
     $("#f-cys").textContent = fmt(res.sites.length);
     $("#f-pos").textContent = fmt(pos.length);
-    $("#f-time").textContent = res.seconds.toFixed(2) + " s";
-    $("#f-dev").textContent = "on the " + res.device;
+    $("#f-time").textContent = res.precomputed ? "Example" : res.seconds.toFixed(2) + " s";
+    $("#f-dev").textContent = res.precomputed ? "precomputed with the released model" : "on the " + res.device;
 
     const box = $("#results");
     box.hidden = false;
