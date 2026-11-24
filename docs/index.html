@@ -10,14 +10,28 @@
 <meta property="og:image" content="static/banner.png">
 <meta name="theme-color" content="#06182a">
 <link rel="icon" href="static/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="style.css">
 <script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
-<div class="topline" aria-hidden="true"></div>
 <div class="progress" aria-hidden="true"><span id="progress"></span></div>
 
-<header class="hero">
+<nav class="topnav at-top" id="topnav" aria-label="Chapters">
+  <div class="topnav-in">
+    <a class="brand" href="#top">Cys<span>Forcing</span></a>
+    <div class="seg" id="seg">
+      <span class="seg-thumb" aria-hidden="true"></span>
+      <a href="#method" data-part="1"><b>1</b>Method</a>
+      <a href="#results" data-part="2"><b>2</b>Results</a>
+      <a href="#generalization" data-part="3"><b>3</b>Generalization</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
   <div class="hero-text reveal">
     <p class="kicker">Cysteine reactivity · chemoproteomics · protein foundation models</p>
     <h1 class="title">CysForcing</h1>
@@ -25,7 +39,7 @@
     <p class="authors">Hongyu Zhang<sup>1</sup>, Feng Zhang<sup>1</sup>, Fengzhang Wang<sup>1</sup>, Zihua Liu<sup>1</sup>, Yudi Guo<sup>1</sup>, Zhiwei Nie<sup>2*</sup>, Chu Wang<sup>1*</sup>, Jie Chen<sup>3,4*</sup>, Yuan Liu<sup>1*</sup></p>
     <p class="affils"><sup>1</sup>Peking University · <sup>2</sup>Fudan University · <sup>3</sup>Harbin Institute of Technology, Shenzhen · <sup>4</sup>Pengcheng Laboratory · <sup>*</sup>corresponding authors</p>
     <nav class="pills" aria-label="Links">
-      <span class="pill is-soon" title="Coming soon">Paper</span>
+      <span class="pill is-soon" title="Coming soon">Paper <span class="soon">soon</span></span>
       <a class="pill" href="https://github.com/Hong-yu-Zhang/CysForcing">Code</a>
       <a class="pill" href="https://doi.org/10.5281/zenodo.24350021">Data</a>
       <a class="pill" href="#demo">Video</a>
@@ -64,8 +78,14 @@
     </div>
   </section>
 
-  <section id="method" class="block">
-    <h2 class="shead"><span>Method</span><em>At a glance</em></h2>
+  <section id="method" class="part part-1" aria-labelledby="method-h">
+    <div class="part-head reveal">
+      <span class="part-num" aria-hidden="true">1</span>
+      <div class="part-title">
+        <p class="part-label">Method</p>
+        <h2 id="method-h">At a glance</h2>
+      </div>
+    </div>
     <div class="paper-fig reveal"><img src="static/method.png" alt="CysForcing architecture: frozen SaProt and ESM-2 encoders, adapters, residue alignment and ratio-prior alignment, decoder" loading="lazy"></div>
     <div class="steps">
       <div class="panel step reveal"><b>01</b><h3>Two frozen encoders</h3><p>SaProt reads the AlphaFold2 structure and ESM-2 the sequence; two small adapters map both views into one space.</p></div>
@@ -74,8 +94,14 @@
     </div>
   </section>
 
-  <section id="results" class="block">
-    <h2 class="shead"><span>Results</span><em>Benchmark against foundation models</em></h2>
+  <section id="results" class="part part-2" aria-labelledby="results-h">
+    <div class="part-head reveal">
+      <span class="part-num" aria-hidden="true">2</span>
+      <div class="part-title">
+        <p class="part-label">Results</p>
+        <h2 id="results-h">Benchmark against foundation models</h2>
+      </div>
+    </div>
     <div class="screen tabs reveal" data-auto="4200">
       <img class="on" src="static/fig_bench_bacc.webp" alt="Balanced accuracy of six models at 100, 80, 60 and 40 percent similarity">
       <img src="static/fig_bench_mcc.webp" alt="MCC of six models at four similarity cutoffs">
@@ -85,10 +111,11 @@
       <button style="left:36.08%;width:5.23%;top:2.09%;height:5.75%" aria-label="Show MCC"></button>
       <button style="left:41.83%;width:3.85%;top:2.09%;height:5.75%" aria-label="Show F1"></button>
       <button style="left:46.20%;width:5.87%;top:2.09%;height:5.75%" aria-label="Show recall"></button>
+      <span class="tab-ind" aria-hidden="true"></span>
     </div>
     <p class="caption reveal">Five protein foundation models at four sequence-similarity cutoffs: the largest gains are in F1 and recall, and they are widest at 40% similarity.</p>
 
-    <h2 class="shead"><span>Results</span><em>Ablation at 40% similarity</em></h2>
+    <h3 class="shead">Ablation at 40% similarity</h3>
     <div class="screen tabs reveal" data-auto="4200">
       <img class="on" src="static/fig_abl_steps_bacc.webp" alt="Ablation, balanced accuracy">
       <img src="static/fig_abl_steps_mcc.webp" alt="Ablation, MCC">
@@ -98,22 +125,31 @@
       <button style="left:35.56%;width:5.23%;top:2.13%;height:5.87%" aria-label="Show MCC"></button>
       <button style="left:41.30%;width:3.85%;top:2.13%;height:5.87%" aria-label="Show F1"></button>
       <button style="left:45.68%;width:5.87%;top:2.13%;height:5.87%" aria-label="Show recall"></button>
+      <span class="tab-ind" aria-hidden="true"></span>
     </div>
     <p class="caption reveal">Fusing sequence and structure already beats either one alone; ratio-prior alignment adds +0.07 F1 and +0.14 recall, the largest single step.</p>
 
-    <h2 class="shead"><span>Results</span><em>Representation space</em></h2>
+    <h3 class="shead">Representation space</h3>
     <div class="screen reveal"><img src="static/fig_latent.webp" alt="Schematic latent spaces of naive fusion and CysForcing coloured by reactivity ratio, with the ratio-ordering score" loading="lazy"></div>
     <p class="caption reveal">Neighbouring sites share similar measured ratios: the ratio-ordering score ρ rises from 0.30 with naive fusion to 0.45 with CysForcing, while shuffled ratios give ρ ≈ 0.</p>
+  </section>
 
-    <h2 class="shead"><span>Generalization</span><em>Zero-shot against released predictors</em></h2>
+  <section id="generalization" class="part part-3" aria-labelledby="generalization-h">
+    <div class="part-head reveal">
+      <span class="part-num" aria-hidden="true">3</span>
+      <div class="part-title">
+        <p class="part-label">Generalization</p>
+        <h2 id="generalization-h">Zero-shot against released predictors</h2>
+      </div>
+    </div>
     <div class="screen reveal"><img src="static/fig_zs_radar.webp" alt="Radar plots of AUROC, AUPRC, MCC and balanced accuracy for CysForcing, CIAA RF, HyperCys and sbPCR on three zero-shot sets" loading="lazy"></div>
     <p class="caption reveal">On mouse, Salmonella SL1344 and CIAA's AlphaFold2 benchmark, CysForcing leads every metric on every set, by +0.12 to +0.28 AUROC over the best released predictor.</p>
 
-    <h2 class="shead"><span>Generalization</span><em>Where homology cannot help</em></h2>
+    <h3 class="shead">Where homology cannot help</h3>
     <div class="screen reveal"><img src="static/fig_zs_homology.webp" alt="AUROC of homology transfer and CysForcing on sites with and without a measured homolog" loading="lazy"></div>
     <p class="caption reveal">Homology transfer copies the ratio of an aligned, measured training cysteine; for the 69–98% of sites without one it falls to chance, while CysForcing keeps AUROC 0.67–0.83.</p>
 
-    <h2 class="shead"><span>Summary</span></h2>
+    <h3 class="shead">Summary</h3>
     <div class="cards">
       <div class="panel card reveal"><b data-to="0.20" data-dec="2" data-pre="+">+0.20</b><div><h3>Recall vs. best baseline</h3><p>at 40% sequence similarity</p></div></div>
       <div class="panel card reveal"><b data-to="2" data-dec="0" data-post="×">2×</b><div><h3>Recall vs. ESM2-15B</h3><p>1.3B vs. 15B parameters, 40% similarity</p></div></div>

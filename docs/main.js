@@ -14,13 +14,77 @@
   }), { threshold: 0.15 });
   document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
 
-  // Metric tabs: the buttons sit over the tabs drawn in each frame; while in view they advance
-  // on their own, as in the video, until the reader picks one.
+  // Bar at the top: the pill follows the chapter in view, and the wordmark appears once the title has
+  // scrolled under the bar.
+  const nav = document.getElementById("topnav");
+  const seg = document.getElementById("seg");
+  const segLinks = [...seg.querySelectorAll("a")];
+  const chapters = segLinks.map((a) => document.getElementById(a.getAttribute("href").slice(1)));
+  const title = document.querySelector(".title");
+  let current = -2;
+  const placeThumb = () => {
+    const a = segLinks[current];
+    if (!a) return;
+    seg.style.setProperty("--x", a.offsetLeft + "px");
+    seg.style.setProperty("--w", a.offsetWidth + "px");
+  };
+  const spy = () => {
+    const line = nav.getBoundingClientRect().bottom + 28;
+    let idx = -1;
+    chapters.forEach((c, i) => {
+      const r = c.getBoundingClientRect();
+      if (r.top <= line && r.bottom > line) idx = i;
+    });
+    nav.classList.toggle("at-top", title.getBoundingClientRect().bottom > line - 28);
+    if (idx === current) return;
+    current = idx;
+    segLinks.forEach((a, i) => {
+      if (i === idx) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current");
+    });
+    seg.classList.toggle("has-active", idx >= 0);
+    if (idx < 0) return;
+    placeThumb();
+    if (seg.scrollWidth > seg.clientWidth) {   // on a phone the control scrolls sideways: keep the pill in view
+      seg.scrollLeft = segLinks[idx].offsetLeft - (seg.clientWidth - segLinks[idx].offsetWidth) / 2;
+    }
+  };
+  let spyQueued = false;
+  const queueSpy = () => {
+    if (spyQueued) return;
+    spyQueued = true;
+    requestAnimationFrame(() => { spyQueued = false; spy(); });
+  };
+  addEventListener("scroll", queueSpy, { passive: true });
+  segLinks.forEach((a, i) => a.addEventListener("click", (e) => {
+    e.preventDefault();
+    chapters[i].scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  }));
+  nav.querySelector(".brand").addEventListener("click", (e) => {
+    e.preventDefault();
+    scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+  });
+
+  // Metric tabs: the buttons sit over the tabs drawn in each frame, and a ring slides to the one shown;
+  // while in view they advance on their own, as in the video, until the reader picks one.
+  const rings = [];
   document.querySelectorAll(".tabs").forEach((box) => {
     const imgs = [...box.querySelectorAll("img")];
+    const btns = [...box.querySelectorAll("button")];
+    const ring = box.querySelector(".tab-ind");
     let k = 0, timer = null, manual = false;
-    const show = (i) => { imgs[k].classList.remove("on"); k = i; imgs[k].classList.add("on"); };
-    box.querySelectorAll("button").forEach((b, i) => b.addEventListener("click", () => {
+    const place = () => {
+      const b = btns[k];
+      if (!ring || !b || !b.offsetWidth) return;
+      ring.style.setProperty("--x", b.offsetLeft + "px");
+      ring.style.setProperty("--w", b.offsetWidth + "px");
+      ring.style.setProperty("--t", b.offsetTop + "px");
+      ring.style.setProperty("--h", b.offsetHeight + "px");
+      box.classList.add("ready");
+    };
+    const show = (i) => { imgs[k].classList.remove("on"); k = i; imgs[k].classList.add("on"); place(); };
+    rings.push(place);
+    imgs[0].complete ? place() : imgs[0].addEventListener("load", place, { once: true });
+    btns.forEach((b, i) => b.addEventListener("click", () => {
       manual = true;
       clearInterval(timer);
       show(i);
@@ -33,6 +97,10 @@
       if (!e.isIntersecting && timer) { clearInterval(timer); timer = null; }
     }, { threshold: 0.5 }).observe(box);
   });
+
+  addEventListener("resize", () => { placeThumb(); queueSpy(); rings.forEach((f) => f()); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { placeThumb(); rings.forEach((f) => f()); });
+  spy();
 
   // Summary numbers count up once, like the summary scene of the video; they start at zero so the
   // final value does not flash before the count begins.

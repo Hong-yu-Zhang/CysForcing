@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CysForcing · Predict reactive cysteines</title>
+<meta name="theme-color" content="#06182a">
+<link rel="icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<nav class="topnav">
+  <div class="topnav-in">
+    <a class="brand" href="./">Cys<span>Forcing</span><em>Predict</em></a>
+    <div class="top-right">
+      <span class="status" id="status"><i></i><span>Connecting…</span></span>
+      <a class="toplink" href="https://hong-yu-zhang.github.io/CysForcing/">Project page</a>
+      <a class="toplink" href="https://github.com/Hong-yu-Zhang/CysForcing">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <header class="intro">
+    <p class="kicker">Web inference · one GPU</p>
+    <h1>Predict reactive cysteines</h1>
+    <p class="lede">Give a UniProt accession or an AlphaFold2 model. CysForcing reads the sequence with ESM-2 and the structure with SaProt, and scores every cysteine.</p>
+  </header>
+
+  <section class="panel input" aria-label="Input">
+    <div class="seg" id="mode" role="tablist">
+      <span class="seg-thumb" aria-hidden="true"></span>
+      <button type="button" role="tab" data-mode="uniprot" aria-selected="true"><b>1</b>UniProt ID</button>
+      <button type="button" role="tab" data-mode="pdb" aria-selected="false"><b>2</b>Upload PDB</button>
+    </div>
+
+    <form id="form" autocomplete="off">
+      <div class="pane" data-pane="uniprot">
+        <label class="field">
+          <span>UniProt accession</span>
+          <input id="acc" name="acc" placeholder="P78417" spellcheck="false" maxlength="12">
+        </label>
+        <div class="examples">
+          <span>Examples</span>
+          <button type="button" data-acc="P78417">GSTO1 <i>P78417</i></button>
+          <button type="button" data-acc="Q99497">PARK7 <i>Q99497</i></button>
+          <button type="button" data-acc="P04406">GAPDH <i>P04406</i></button>
+          <button type="button" data-acc="Q14145">KEAP1 <i>Q14145</i></button>
+        </div>
+        <p class="hint">The AlphaFold DB model of the accession is fetched by the server.</p>
+      </div>
+
+      <div class="pane" data-pane="pdb" hidden>
+        <label class="drop" id="drop">
+          <input type="file" id="file" accept=".pdb,.ent,text/plain">
+          <b>Drop a PDB file here</b>
+          <span id="fname">or click to choose one · chain A is scored</span>
+        </label>
+        <p class="hint">Use a full-length predicted model (AlphaFold2, as in the paper); experimental structures with missing residues are rejected.</p>
+      </div>
+
+      <div class="run-row">
+        <button class="run" id="run" type="submit"><span>Predict</span></button>
+        <p class="note">The first 1,023 residues are scored, as in <code>simple_inference.py</code>.</p>
+      </div>
+    </form>
+
+    <div class="busy" id="busy" hidden>
+      <div class="bar"><span></span></div>
+      <p><span id="busy-msg">Running</span> <b id="clock">0.0 s</b></p>
+    </div>
+    <p class="error" id="error" role="alert" hidden></p>
+  </section>
+
+  <section class="results" id="results" hidden>
+    <div class="res-head">
+      <div>
+        <p class="kicker" id="r-source"></p>
+        <h2 id="r-name"></h2>
+        <p class="r-meta" id="r-meta"></p>
+      </div>
+      <div class="dl">
+        <button type="button" class="btn" id="dl-json">result.json</button>
+        <button type="button" class="btn" id="dl-csv">CSV</button>
+      </div>
+    </div>
+
+    <dl class="facts">
+      <div><dt id="f-len"></dt><dd>residues</dd></div>
+      <div><dt id="f-cys"></dt><dd>cysteines</dd></div>
+      <div><dt id="f-pos"></dt><dd>predicted reactive (p ≥ 0.5)</dd></div>
+      <div><dt id="f-time"></dt><dd id="f-dev">on the GPU</dd></div>
+    </dl>
+
+    <div class="panel track-card">
+      <div class="card-head">
+        <h3>Along the sequence</h3>
+        <ul class="legend"><li><i class="lg-pos"></i>p ≥ 0.5</li><li><i class="lg-neg"></i>p &lt; 0.5</li><li><i class="lg-thr"></i>threshold</li></ul>
+      </div>
+      <div class="track" id="track"></div>
+    </div>
+
+    <div class="split">
+      <div class="panel viewer-card">
+        <div class="card-head">
+          <h3>On the structure</h3>
+          <div class="scale"><span>0</span><i></i><span>1</span></div>
+        </div>
+        <div class="viewer" id="viewer"><p class="viewer-msg" id="viewer-msg">Loading the 3D viewer…</p></div>
+        <p class="viewer-tip">Cysteine sulfur atoms, coloured by probability. Click a row or a dot to fly to it.</p>
+      </div>
+
+      <div class="panel table-card">
+        <div class="card-head">
+          <h3>Cysteines</h3>
+          <div class="sort" id="sort">
+            <button type="button" data-sort="prob" class="on">By probability</button>
+            <button type="button" data-sort="pos">By position</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>Site</th><th>Context</th><th class="pl">pLDDT</th><th>Probability</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>The score is CysForcing's probability of reactivity: training sites with an isoTOP-ABPP ratio ≤ 5 are positive, and calls are made at 0.5. For research use.</span>
+  <span>Structures: AlphaFold DB, CC BY 4.0</span>
+</footer>
+
+<div class="tip" id="tip" hidden></div>
+<script src="https://cdn.jsdelivr.net/npm/3dmol@2.5.3/build/3Dmol-min.js" defer></script>
+<script src="app.js" defer></script>
+</body>
+</html>
