@@ -15,12 +15,12 @@
   };
 
   // ---------------------------------------------------------------- server status
-  let device = "the GPU";
+  let device = "GPU";
   const status = $("#status");
   fetch("api/health").then((r) => r.json()).then((h) => {
     device = h.device;
     status.classList.add("ok");
-    status.lastElementChild.innerHTML = 'Ready<span class="dev"> · ' + esc(h.device) + "</span>";
+    status.lastElementChild.textContent = "Ready";
   }).catch(() => {
     status.classList.add("down");
     status.lastElementChild.textContent = "Server offline";
@@ -83,12 +83,12 @@
       const a = acc.value.trim().toUpperCase();
       if (!a) return showError("Type a UniProt accession, or pick an example.");
       body = { uniprot: a };
-      $("#busy-msg").textContent = "Fetching the AlphaFold DB model and scoring on " + device;
+      $("#busy-msg").textContent = "Fetching the AlphaFold DB model and scoring on the " + device;
     } else {
       if (!upload) return showError("Choose a PDB file first.");
       body = { pdb: upload.text, name: upload.name };
       pdbText = upload.text;
-      $("#busy-msg").textContent = "Scoring on " + device;
+      $("#busy-msg").textContent = "Scoring on the " + device;
     }
     run.disabled = true;
     busy.hidden = false;
@@ -133,7 +133,7 @@
     $("#f-cys").textContent = fmt(res.sites.length);
     $("#f-pos").textContent = fmt(pos.length);
     $("#f-time").textContent = res.seconds.toFixed(2) + " s";
-    $("#f-dev").textContent = "on " + res.device;
+    $("#f-dev").textContent = "on the " + res.device;
 
     const box = $("#results");
     box.hidden = false;
@@ -251,7 +251,7 @@
   }
   const labelStyle = (atom, border) => ({
     position: { x: atom.x, y: atom.y, z: atom.z }, backgroundColor: "#0b131d", backgroundOpacity: 0.92,
-    borderColor: border, borderThickness: 1, fontColor: "#eeeff1", fontSize: 13, font: "JetBrains Mono", inFront: true,
+    borderColor: border, borderThickness: 1, fontColor: "#eeeff1", fontSize: 13, font: "Google Sans", inFront: true,
   });
 
   function select(pos, fromPlot) {

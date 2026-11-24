@@ -86,8 +86,8 @@ class Predictor:
         self.model.to(si.device).eval()
         self.lock = threading.Lock()
         self.waiting = 0
-        self.gpu = torch.cuda.get_device_name(si.device) if si.device.type == "cuda" else "CPU"
-        print(f"models loaded on {self.gpu} in {time.time() - t0:.1f}s", flush=True)
+        self.device = "GPU" if si.device.type == "cuda" else "CPU"   # the kind only, never the card model
+        print(f"models loaded on the {self.device} in {time.time() - t0:.1f}s", flush=True)
 
     def predict(self, pdb_path):
         seq = si.extract_sequence_from_pdb(pdb_path)
@@ -229,7 +229,7 @@ def run(payload):
         "threshold": THRESHOLD,
         "sites": sites,
         "seconds": round(secs, 2),
-        "device": PREDICTOR.gpu,
+        "device": PREDICTOR.device,
         "result_json": [{name: cli}],
         "pdb": pdb_text if source == "AlphaFold DB" else None,   # an upload is already in the browser
     }
@@ -252,7 +252,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         route = urllib.parse.urlparse(self.path).path
         if route == "/api/health":
-            return self._send(200, {"ok": True, "device": PREDICTOR.gpu, "waiting": PREDICTOR.waiting,
+            return self._send(200, {"ok": True, "device": PREDICTOR.device, "waiting": PREDICTOR.waiting,
                                     "max_residues": MAX_RES, "threshold": THRESHOLD})
         if route in STATIC:
             path, ctype = STATIC[route]
